@@ -4,6 +4,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private LayerMask ground;
+    [SerializeField] private Transform cameraTransform; // Add camera reference
 
     private Rigidbody rb;
     private Animator animator;
@@ -38,6 +39,13 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+
+        // Auto-find main camera if not assigned
+        if (cameraTransform == null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
+
         if (hollowgramTransform == null)
         {
             Debug.LogWarning("Hollowgram transform is not assigned");
@@ -114,7 +122,9 @@ public class Player : MonoBehaviour
             }
         }
 
-        Vector3 desiredVel = input * currentVelocity;
+        // Get camera-relative input direction
+        Vector3 cameraRelativeInput = GetCameraRelativeInput(input);
+        Vector3 desiredVel = cameraRelativeInput * currentVelocity;
 
         // Curved input for smoother feel
         float vx = Mathf.Pow(Mathf.Abs(desiredVel.x), speedPow * 0.5f) * Mathf.Sign(desiredVel.x);
@@ -124,7 +134,11 @@ public class Player : MonoBehaviour
         Vector3 gravityUp = -curGravity.normalized;
         Quaternion align = Quaternion.FromToRotation(Vector3.up, gravityUp);
 
-        Vector3 moveDir = align * new Vector3(input.x, 0, input.z);
+        // Use camera-relative direction for movement
+        Vector3 moveDir = cameraRelativeInput.normalized;
+
+        // Project moveDir to be perpendicular to gravity
+        moveDir = Vector3.ProjectOnPlane(moveDir, curGravity.normalized).normalized;
 
         // Rotate player to face movement direction
         if (moveDir.sqrMagnitude > 0.001f)
@@ -133,8 +147,8 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, moveRot, rotateSpeed * Time.deltaTime);
         }
 
-        // Calculate movement in world space
-        Vector3 worldMove = align * new Vector3(vx, 0, vz);
+        // Calculate movement in world space using camera-relative direction
+        Vector3 worldMove = moveDir * currentVelocity;
         Vector3 gravityDir = curGravity.normalized;
 
         // Preserve vertical velocity component
@@ -152,6 +166,27 @@ public class Player : MonoBehaviour
         }
 
         animator.SetBool(fallingIdleID, !isGrounded);
+    }
+
+    // New method: Convert WASD input to camera-relative direction
+    private Vector3 GetCameraRelativeInput(Vector3 input)
+    {
+        if (cameraTransform == null || input.magnitude < 0.01f)
+            return Vector3.zero;
+
+        // Get camera forward and right vectors
+        Vector3 cameraForward = cameraTransform.forward;
+        Vector3 cameraRight = cameraTransform.right;
+
+        // Project camera directions onto the plane perpendicular to gravity
+        Vector3 gravityNormal = curGravity.normalized;
+        cameraForward = Vector3.ProjectOnPlane(cameraForward, gravityNormal).normalized;
+        cameraRight = Vector3.ProjectOnPlane(cameraRight, gravityNormal).normalized;
+
+        // Calculate movement direction relative to camera
+        Vector3 moveDirection = (cameraForward * input.z + cameraRight * input.x);
+
+        return moveDirection.normalized;
     }
 
     private void HandleGravityInput()

@@ -563,6 +563,37 @@ Transform:
   m_Father: {fileID: 545928061}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &132098225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 132098226}
+  m_Layer: 0
+  m_Name: camera point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &132098226
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 132098225}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.00007592833, y: 1.67, z: -0.00895152}
+  m_LocalScale: {x: 0.7637086, y: 0.75316423, z: 0.7637086}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 543450653259175915}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &178311889
 GameObject:
   m_ObjectHideFlags: 0
@@ -1108,12 +1139,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d64dad66bc2344bb8832cdee6448b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 543450653259175915}
-  offset: {x: 0, y: 1.7, z: -4}
+  target: {fileID: 132098226}
+  offset: {x: 0, y: -0.66, z: -2.4}
   sensitivity: 150
   minY: -40
   maxY: 70
   followSpeed: 10
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  collisionRadius: 0.3
+  minDistanceFromWall: 0.2
 --- !u!1 &332856813
 GameObject:
   m_ObjectHideFlags: 0
@@ -7907,6 +7943,7 @@ Transform:
   m_LocalScale: {x: 1.3094, y: 1.3277316, z: 1.3094}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 132098226}
   - {fileID: 88903037}
   - {fileID: 942345878203165021}
   - {fileID: 2308509019589383327}
@@ -8048,6 +8085,7 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 1
+  cameraTransform: {fileID: 0}
   feetPoint: {fileID: 88903037}
   acce: 5
   dece: 3
